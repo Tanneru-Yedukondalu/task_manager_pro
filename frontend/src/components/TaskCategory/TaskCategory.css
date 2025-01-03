@@ -1,0 +1,20 @@
+.task-category {
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 10px;
+  }
+  
+  .task-category-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .task-list {
+    margin-top: 10px;
+  }
+  
+  .task-item {
+    margin: 5px 0;
+  }
+  
