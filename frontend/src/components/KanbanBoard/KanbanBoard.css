@@ -1,0 +1,105 @@
+/* Modal overlay */
+.kanban-board-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above all other content */
+}
+
+/* Kanban Board Modal Container */
+.kanban-board {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+  z-index: 1010; /* Ensure the modal is above the overlay */
+  font-family: Arial, sans-serif;
+  overflow-x: auto;
+}
+
+/* Close button for the Kanban Board modal */
+.closing-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.closing-btn:hover {
+  background-color: #ff1a1a;
+}
+
+/* Table Styles */
+.kanban-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+.kanban-table th, 
+.kanban-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.kanban-table th {
+  background-color: #0275d8; /* Table header background color */
+  color: white; /* Table header text color */
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.kanban-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Alternate row color */
+}
+
+.kanban-table tbody tr:hover {
+  background-color: #d9edf7; /* Row hover color */
+}
+
+.kanban-table td ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.kanban-table td ul li {
+  margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .kanban-board {
+    padding: 15px;
+  }
+
+  .closing-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .kanban-table th, 
+  .kanban-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

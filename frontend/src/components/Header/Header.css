@@ -1,0 +1,123 @@
+/* Container for the header */
+.header-container {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #b0f3f0, #437575); /* Gradient background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Left section containing the login button */
+.left-section {
+    width: 20%;
+    height: 50%;
+    padding: 5px;
+    font-size: large;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Login button */
+.login-btn {
+    width: 70%;
+    height: 100%;
+    padding: 10px;
+    font-size: large;
+    color: white;
+    background-color: #58a9ff; /* Blue background */
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(32, 32, 32, 0.2);
+    cursor: pointer;
+}
+
+/* Title in the center of the header */
+.title {
+    width: 60%;
+    height: 50%;
+    padding: 5px;
+    font-size: 28px;
+    font-weight: bolder;
+    color: white; /* White text color for contrast */
+    text-align: center;
+}
+
+/* Right section containing the profile, settings, and logout buttons */
+.right-section {
+    width: 40%;
+    height: 50%;
+    padding: 5px;
+    font-size: large;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Profile, settings, and logout buttons */
+.profile-btn,
+.settings-btn,
+.logout-btn {
+    width: 30%;
+    height: 100%;
+    padding: 10px;
+    font-size: large;
+    color: #007bff; /* Blue text color */
+    background-color: white; /* White background */
+    border: 2px solid #8a9291; /* Blue border for contrast */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(32, 32, 32, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+
+
+.profile-btn {
+   
+    color: #111010; /* Blue text color */
+    
+}
+
+.settings-btn {
+    color: #6e6d6d; /* Blue text color */
+    
+}
+.logout-btn {
+   
+    color: #ff0022; /* Blue text color */
+    
+}
+
+/* Button hover effect */
+.profile-btn:hover,
+.settings-btn:hover,
+.logout-btn:hover {
+    background-color: #003b3f; /* Change background color to blue on hover */
+    color: white; /* Change text color to white on hover */
+}
+
+
+
+.settings-btn:hover
+ {
+    background-color: #6c6c6db2; /* Change background color to blue on hover */
+    color: white; /* Change text color to white on hover */
+}
+
+
+.logout-btn:hover {
+    background-color: #fd5050; /* Change background color to blue on hover */
+    color: white; /* Change text color to white on hover */
+}

@@ -1,0 +1,127 @@
+/* Backdrop to darken the background */
+.profile-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.4s ease-out;
+  }
+  
+  /* Modal Container */
+  .profile-modal {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  /* Header Style */
+  .profile-modal h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  
+  /* Profile Image */
+  .default-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #007bff; /* Blue background */
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Profile Information */
+  .profile-info {
+    display: grid;
+    grid-template-columns: 1fr auto 2fr;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  
+  .profile-info .label {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .profile-info .separator {
+    text-align: center;
+    margin: 0 10px;
+    font-weight: 400;
+  }
+  
+  /* Ensure the separator (colon) aligns properly */
+  .profile-info .separator::before {
+    content: ":";
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+
+  
+  /* Close Button Style */
+  .close-btn {
+    background-color: #f44336;
+    margin-top: 15px;
+    padding: 12px 30px;
+  }
+  
+  .close-btn:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Edit Button Style */
+  .edit-btn {
+    background-color: #4caf50;
+    margin-top: 10px;
+    padding: 12px 30px;
+  }
+  
+  .edit-btn:hover {
+    background-color: #388e3c;
+  }
+  
+  /* Smooth Animations */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  

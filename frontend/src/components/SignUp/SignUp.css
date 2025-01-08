@@ -1,0 +1,117 @@
+/* SignUp.css */
+
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #cddff8;
+    padding: 20px;
+    background-image: 
+    url("/home/mv/Desktop/Task Manager Pro/frontend/src/assets/bg.jpg");
+    
+}
+
+.abcdef{
+    background-color: rgb(219, 231, 233);
+    padding: 15px;
+    border-radius: 10px;
+    width: 30%;
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signup-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.signup-error,
+.signup-success {
+    color: #ff0000; /* Red for error */
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.signup-success {
+    color: #28a745; /* Green for success */
+}
+
+.signup-form {
+    background-color: #e0eaf3;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.signup-field {
+    margin-bottom: 20px;
+}
+
+.signup-label {
+    font-size: 1rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.signup-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.signup-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.signup-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signup-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.signup-button:hover {
+    background-color: #0056b3;
+}
+
+.login-redirect {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.login-redirect:hover {
+    background-color: #218838;
+}
