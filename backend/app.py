@@ -17,7 +17,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Enable CORS for the app (allow connections from localhost:5173)
-CORS(app, origins=["http://localhost:5173"], allow_headers=["Content-Type", "Authorization"])
+CORS(app, origins=["https://10.50.48.11:5173"], allow_headers=["Content-Type", "Authorization"])
 
 # Initialize JWTManager with the Flask app
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY  # Make sure this is defined in your config.py
@@ -39,4 +39,5 @@ def health_check():
     return {"status": "ok", "message": "Server is running"}, 200
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, port=5000)
+    # socketio.run(app, host="0.0.0.0", debug=True, port=5000)
+    socketio.run(app, port=5000, host="0.0.0.0", debug=False, ssl_context=('/home/mv/Desktop/Task_Manager_Pro/cert.pem', '/home/mv/Desktop/Task_Manager_Pro/key.pem'))

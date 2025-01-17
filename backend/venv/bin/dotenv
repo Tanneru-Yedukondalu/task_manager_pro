@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/mv/Desktop/Task Manager Pro/backend/venv/bin/python3" "$0" "$@"
+'''exec' "/home/mv/Desktop/Task_Manager_Pro/backend/venv/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re

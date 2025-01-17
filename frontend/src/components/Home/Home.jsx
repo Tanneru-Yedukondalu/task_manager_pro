@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import './Home.css';
 import Header from "../Header/Header";
@@ -30,6 +30,13 @@ const Home = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const loggedInUsername = localStorage.getItem("username");
     const [isKanbanOpen, setIsKanbanOpen] = useState(false);
+    const disconnectSocketRef = useRef(null);
+
+    const handleDisconnectSocket = () => {
+      if (disconnectSocketRef.current) {
+        disconnectSocketRef.current(); // Call the disconnectSocket function in ChatBox
+      }
+    };
     // const navigate = useNavigate();
 
 
@@ -123,7 +130,7 @@ const Home = () => {
 
     return (
         <div className="app">
-            <Header />
+            <Header handleLogout={handleDisconnectSocket} />
 
             <div className={`body ${isFormOpen ? "blur-background" : ""}`}>
                 <div className="y">
@@ -266,7 +273,7 @@ const Home = () => {
             )}
 
             {/* Chatbox component */}
-            <ChatBox isOpen={isChatOpen} toggleChat={toggleChat} username={loggedInUsername} />
+            <ChatBox isOpen={isChatOpen} toggleChat={toggleChat} username={loggedInUsername} setDisconnectSocket={(func) => (disconnectSocketRef.current = func)} />
 
 
             {isKanbanOpen && (

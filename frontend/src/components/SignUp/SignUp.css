@@ -1,6 +1,7 @@
 /* SignUp.css */
 
 .signup-container {
+    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -9,7 +10,7 @@
     background-color: #cddff8;
     padding: 20px;
     background-image: 
-    url("/home/mv/Desktop/Task Manager Pro/frontend/src/assets/bg.jpg");
+    url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/bg.jpg");
     
 }
 
@@ -17,8 +18,8 @@
     background-color: rgb(219, 231, 233);
     padding: 15px;
     border-radius: 10px;
-    width: 30%;
-    height: 70%;
+    width: 100%;
+    max-width: 400px;
     display: flex;
     justify-content: center;
     flex-direction: column;

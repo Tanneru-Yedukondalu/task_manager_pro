@@ -48,7 +48,7 @@ const SignupForm = () => {
             setSuccess(true);
             setError(null);
             setFormData({ username: '', email: '', password: '', confirmPassword: '', firstName: '', lastName: '', role: 'Manager' });
-            navigate("/login");
+            navigate("/");
         } catch (err) {
             setError("Error during signup.");
             setSuccess(false);
@@ -57,7 +57,7 @@ const SignupForm = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        navigate("/login");
+        navigate("/");
     };
 
     return (

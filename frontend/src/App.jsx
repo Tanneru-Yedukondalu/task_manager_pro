@@ -25,7 +25,7 @@ const App = () => {
         }
         />
         <Route
-        path = "/login"
+        path = "/"
         element={
           <LoginForm/>
         }

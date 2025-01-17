@@ -1,4 +1,6 @@
 flask
 flask-cors
 pymongo
-dotenv
+python-dotenv
+flask-jwt-extended
+flask-socketio

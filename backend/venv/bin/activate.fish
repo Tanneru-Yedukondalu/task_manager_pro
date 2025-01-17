@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/home/mv/Desktop/Task Manager Pro/backend/venv'
+set -gx VIRTUAL_ENV '/home/mv/Desktop/Task_Manager_Pro/backend/venv'
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

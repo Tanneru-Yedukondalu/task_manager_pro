@@ -1,0 +1,153 @@
+/* Overlay for the video call */
+.video-call-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Dimmed background */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  /* Video call container */
+  .video-call-container {
+    background: #20232a;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 800px;
+    color: #ffffff;
+    font-family: "Roboto", sans-serif;
+  }
+  
+  /* Animation for smooth entrance */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* Video Wrapper */
+  .video-wrapper {
+    margin: 20px 0;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* Specific styles for remote and local videos */
+  .remote-video-wrapper {
+    margin-bottom: 15px;
+  }
+  
+  .video-title {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #f5f5f5;
+    text-align: left;
+  }
+  
+  /* Video display */
+  .video {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 10px;
+    background: #000;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+    border: 2px solid #3e3e4e;
+  }
+  
+  /* Placeholder for waiting video */
+  .video-placeholder {
+    width: 100%;
+    max-width: 500px;
+    height: 280px;
+    background: #2a2d3a;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    font-size: 14px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Call controls container */
+  .video-controls {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  /* Buttons styling */
+  .control-button {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .control-button:hover {
+    background: #0056b3;
+  }
+  
+  /* Reject and End Call buttons */
+  .end-call-button {
+    background: #dc3545;
+  }
+  
+  .end-call-button:hover {
+    background: #a71d2a;
+  }
+  
+  /* Accept button */
+  .accept-button {
+    background: #28a745;
+    color: #fff;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .accept-button:hover {
+    background: #218838;
+  }
+  
+  /* Reject button */
+  .reject-button {
+    background: #dc3545;
+    color: #fff;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .reject-button:hover {
+    background: #c82333;
+  }
+  

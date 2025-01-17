@@ -9,7 +9,7 @@ import ProfileModal from "../Profile/ProfileModal";
 import SettingsDropdown from "../SettingsDropdown/SettingsDropdown"; // Import the dropdown
 import "./Header.css";
 
-const Header = () => {
+const Header = ({handleLogout}) => {
   const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
@@ -28,12 +28,13 @@ const Header = () => {
   };
 
   // Logout user
-  const handleLogout = () => {
-    // Clear local storage
-    localStorage.clear();
+  const onLogout = () => {
+    if (handleLogout) {
+      handleLogout(); // Disconnect the socket
+    }
 
-    // Navigate to login page
-    navigate("/login");
+    localStorage.clear(); // Clear local storage
+    navigate("/"); // Redirect to login
   };
 
   // Toggle profile modal visibility
@@ -84,7 +85,7 @@ const Header = () => {
           <SettingsDropdown activeOption={activeOption} onOptionClick={handleOptionClick} />
         )}
 
-        <div className="logout-btn" onClick={handleLogout}>
+        <div className="logout-btn" onClick={onLogout}>
           <LogoutIcon />
           <div>Logout</div>
         </div>

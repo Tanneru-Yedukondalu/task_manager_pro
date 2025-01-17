@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5000"; // Change the base URL as per your backend
+// const API_URL = "http://localhost:5000"; // Change the base URL as per your backend
+const API_URL = "https://10.50.48.11:5000"; // Replace 'localhost' with your machine's network IP
 
 // Register user (signup)
 export const signup = async (userData) => {
