@@ -4,7 +4,7 @@ import "./App.css";
 import Home from './components/Home/Home';
 import SignupForm from './components/SignUp/SignUp';
 import LoginForm from './components/Login/Login';
-import TimeAddingCalculator from './components/TimeCalculator/TimeCalculator';
+
 
 //implement public and private routes later
 const App = () => {
@@ -28,13 +28,6 @@ const App = () => {
         path = "/"
         element={
           <LoginForm/>
-        }
-        />
-
-<Route
-        path = "/time"
-        element={
-          <TimeAddingCalculator/>
         }
         />
       </Routes>

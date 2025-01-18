@@ -188,13 +188,13 @@ export const fetchUserProfile = async () => {
 
 
 
-
 export const fetchAllTasks = async () => {
   try {
     const response = await fetch(`${API_URL}/kanban`);
-    // Check if the response is valid and parse it
     const data = await response.json();
-    if (Array.isArray(data.tasks)) {
+    console.log("Fetched tasks:", data);  // Log the entire response for debugging
+
+    if (data && Array.isArray(data.tasks)) {
       return data.tasks;  // Return all tasks if 'tasks' is an array
     } else {
       throw new Error("Expected an array of tasks.");
@@ -202,6 +202,31 @@ export const fetchAllTasks = async () => {
   } catch (error) {
     console.error("Error fetching tasks:", error);
     throw error;  // Re-throw the error after logging it
+  }
+};
+
+
+
+
+// Fetch all users
+export const fetchAllUsers = async () => {
+  try {
+    const response = await fetch(`${API_URL}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const data = await response.json();
+    return data; // Return the full user data array
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    throw error;
   }
 };
 

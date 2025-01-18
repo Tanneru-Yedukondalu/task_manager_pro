@@ -15,3 +15,7 @@ def create_user(user_data):
 def create_task(task_data):
     result = tasks_collection.insert_one(task_data)
     return str(result.inserted_id)
+    
+def get_all_users():
+    users = users_collection.find({}, {"_id": 0, "username": 1})  # Fetch only usernames, exclude _id
+    return list(users)

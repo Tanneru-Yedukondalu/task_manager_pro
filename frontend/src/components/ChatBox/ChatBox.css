@@ -3,8 +3,8 @@
     position: fixed;
     top: 10%;
     right: 0;
-    width: 40%;
-    height: 75%;
+    width: 45%;
+    height: 85%;
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -24,6 +24,22 @@
         right: 0;
     }
 }
+
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.status-dot.online {
+  background-color: green; /* Green for online */
+}
+.status-dot.offline {
+  background-color: red; /* Red for offline */
+}
+
 
 /* Chatbox container */
 .chatbox-container {

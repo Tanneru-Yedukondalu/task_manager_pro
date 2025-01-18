@@ -1,3 +1,10 @@
+
+// Work on Reject call and screen share.
+// Work on group call.
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatBox.css';
 import SendIcon from '@mui/icons-material/Send';
@@ -5,37 +12,35 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import { io } from 'socket.io-client';
 import UserIcon from "../../assets/userprofile.jpg";
 import VideoCall from '../VideoCall/VideoCall';
+import { fetchAllUsers } from '../../api';
 
 const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
-
+  const [allUsers, setAllUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const [chatHistories, setChatHistories] = useState({});
   const [inputMessage, setInputMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [receiver, setReceiver] = useState('');
-
-
   const [callOffer, setCallOffer] = useState(null); // Store the incoming offer
-
   const [callState, setCallState] = useState("idle"); // idle, calling, receiving, inCall
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const peerConnection = useRef(null);
   const iceCandidateQueue = useRef([]); // Queue to store ICE candidates
 
-
   const configuration = {
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302",
-      },
-    ],
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
   };
 
   useEffect(() => {
-    
-    const socketIo = io('https://10.50.48.11:5000'); // Use your server's IP address
+    const socketIo = io('https://10.50.48.11:5000', {
+      transports: ['websocket', 'polling'], // Use both WebSocket and polling as fallback
+      secure: true, // Explicitly use secure connections
+      reconnectionAttempts: 5, // Retry connection if it fails
+    }); 
+
+
     // const socketIo = io('http://localhost:5000'); // Connect to Flask-SocketIO server
     setSocket(socketIo);
 
@@ -81,7 +86,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
             console.log("Added ICE candidate:", candidate);
           } else {
             iceCandidateQueue.current.push(candidate);
-            console.warn("Queued ICE candidate:", candidate);
+            console.log("Queued ICE candidate:", candidate);
           }
         }
       });
@@ -93,20 +98,22 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
     };
   }, [username]);
 
-    // Disconnect socket
-    const disconnectSocket = () => {
-      if (socket) {
-        socket.disconnect();
-        setSocket(null);
-      }
-    };
+  const disconnectSocket = () => {
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
+  };
 
-    useEffect(() => {
-      if (setDisconnectSocket) {
-        setDisconnectSocket(() => disconnectSocket);
-      }
-    }, [setDisconnectSocket, socket]);
-  
+  useEffect(() => {
+    if (setDisconnectSocket) {
+      setDisconnectSocket(() => disconnectSocket);
+    }
+  }, [setDisconnectSocket, socket]);
+
+
+
+
   useEffect(() => {
     const handleUnload = () => {
       if (socket) {
@@ -127,6 +134,33 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
     };
   }, [socket]);
 
+  
+
+  useEffect(() => {
+    if (socket) {
+      // Listen for the call_ended event
+      socket.on("call_ended", ({ from }) => {
+        console.log(`Call ended by: ${from}`);
+  
+        // Reset the call state and UI
+        setCallState("idle");
+        setLocalStream(null);
+        setRemoteStream(null);
+  
+        // Close peer connection
+        if (peerConnection.current) {
+          peerConnection.current.close();
+          peerConnection.current = null;
+        }
+      });
+    }
+  
+    return () => {
+      if (socket) {
+        socket.off("call_ended");
+      }
+    };
+  }, [socket]);
 
 
   const handleSendMessage = () => {
@@ -149,9 +183,6 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
       setInputMessage('');
     }
   };
-
-
-  
 
   const startLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -179,21 +210,19 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
   const handleStartCall = async () => {
     setCallState("calling");
-    peerConnection.current = createPeerConnection();
-
     const stream = await startLocalStream();
+    peerConnection.current = createPeerConnection();
     stream.getTracks().forEach((track) => peerConnection.current.addTrack(track, stream));
-
     const offer = await peerConnection.current.createOffer();
     await peerConnection.current.setLocalDescription(offer);
-
     socket.emit("start_call", { offer, receiver });
   };
+
+
   const handleAnswerCall = async () => {
     setCallState("inCall");
-    peerConnection.current = createPeerConnection();
-
     const stream = await startLocalStream();
+    peerConnection.current = createPeerConnection();
     stream.getTracks().forEach((track) => peerConnection.current.addTrack(track, stream));
 
     if (callOffer) {
@@ -211,10 +240,19 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
     }
   };
 
-  const handleRejectCall = () => {
+
+  const handleEndCall = () => {
     setCallState("idle");
-    socket.emit("reject_call", { to: receiver });
+    setLocalStream(null);
+    setRemoteStream(null);
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+    // Notify the backend about the call end
+    socket.emit('call_ended', { to: receiver });
   };
+  
 
 
 
@@ -238,6 +276,33 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
 
 
+
+
+
+
+
+
+
+useEffect(() => {
+  const loadAllUsers = async () => {
+    try {
+      const users = await fetchAllUsers();
+      const filteredUsers = users.filter((user) => user.username !== username); // Exclude current user
+      setAllUsers(filteredUsers.map((user) => user.username));
+    } catch (error) {
+      console.error("Error loading all users:", error);
+    }
+  };
+
+  loadAllUsers();
+}, [username]); // Make sure username is part of the dependencies
+
+  
+
+
+
+
+
   return (
     isOpen && (
       <div className="chatbox">
@@ -249,13 +314,20 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
             </div>
             <div className="onlineusers">
               <ul>
-                {onlineUsers.map((user, index) => (
+                {allUsers.map((user, index) => {
+                   const isOnline = onlineUsers.includes(user);
+                   return (
                   <li
                     key={index}
                     className={`user-item ${receiver === user ? 'selected' : ''}`}
                     onClick={() => setReceiver(user)}
                   >
-                    <span className="online-dot"></span>
+                    {/* <span className="online-dot"></span> */}
+                    {/* Status Indicator */}
+            <span
+              className={`status-dot ${isOnline ? 'online' : 'offline'}`} // Add appropriate classes for styling
+            ></span>
+
 
                     <img
                       src={UserIcon}
@@ -264,7 +336,8 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
                     />
                     {user}
                   </li>
-                ))}
+                   )
+})}
               </ul>
             </div>
           </div>
@@ -342,11 +415,11 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
             localStream={localStream}
             remoteStream={remoteStream}
             callState={callState}
-            onEndCall={handleRejectCall}
+            onEndCall={handleEndCall}
             onMuteToggle={handleMuteToggle}
             onCameraToggle={handleCameraToggle}
             onAnswerCall={handleAnswerCall}
-            onRejectCall={handleRejectCall}
+            onRejectCall={handleEndCall}  // for now just ending the call on rejecting the call.
             receiver={receiver}
 
           />

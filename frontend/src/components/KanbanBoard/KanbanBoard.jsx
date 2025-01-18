@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { fetchAllTasks } from "../../api";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import Form from "../Form/Form"; // Import the form component
 import "./KanbanBoard.css";
+
 
 const KanbanBoard = ({ onClose }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null); // State for the selected user
+  const [openTaskDialog, setOpenTaskDialog] = useState(false); // For task dialog visibility
+
 
   useEffect(() => {
     const getTasks = async () => {
@@ -32,18 +38,26 @@ const KanbanBoard = ({ onClose }) => {
     return <div>Loading...</div>;
   }
 
-  const handleAddTaskClick = (username) => {
-    alert(`Thanks for clicking! Will implement soon for ${username}.`);
+  const handleAddTaskClick = (username, userId) => {
+    console.log(`Thanks for clicking! Will implement soon for ${username}.`);
+    console.log("selected username", username);
+    console.log("selected userId", userId);  // Log to make sure the userId is correct
+  
+    setSelectedUser(username);
+    setSelectedUserId(userId);  // Set the selected userId
+    setOpenTaskDialog(true);     // Open the task form dialog
   };
+  
 
   const tasksByUser = tasks.reduce((acc, task) => {
-    const { username, role } = task;
+    const { username, role, user_id } = task;  // Ensure user_id is included
     if (!acc[username]) {
-      acc[username] = { role, tasks: [] };
+      acc[username] = { role, user_id, tasks: [] };  // Store user_id here
     }
     acc[username].tasks.push(task);
     return acc;
   }, {});
+  
 
   return (
     <div className="kanban-board-overlay">
@@ -90,7 +104,7 @@ const KanbanBoard = ({ onClose }) => {
                       
                      
                       startIcon={<AddIcon />}
-                      onClick={() => handleAddTaskClick(username)}
+                      onClick={() => handleAddTaskClick(username, data.user_id)}
                     >
                       Add
                     </Button>
@@ -101,6 +115,8 @@ const KanbanBoard = ({ onClose }) => {
           </table>
         )}
       </div>
+       {/* Display the form to add a task for the selected user */}
+       {openTaskDialog && <Form selectedUser={selectedUser} selectedUserId={selectedUserId}/>}
     </div>
   );
 };

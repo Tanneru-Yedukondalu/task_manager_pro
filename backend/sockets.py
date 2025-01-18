@@ -8,7 +8,7 @@ users = {}
 
 def initialize_socket(app):
     """Initialize the socket with the Flask app."""
-    socketio = SocketIO(app, cors_allowed_origins="*")  # Allow connections from frontend
+    socketio = SocketIO(app, cors_allowed_origins="https://10.50.48.11:5173")  # Allow connections from frontend
 
 
 
@@ -68,7 +68,7 @@ def initialize_socket(app):
         caller = data.get('to')
         
         if caller in users:
-            print(f"Call answered by {caller}")
+            print(f" Received Call answer to {caller}")
             # Send the answer back to the caller
             emit('receive_answer', {'answer': answer}, room=users[caller])
         else:
@@ -79,13 +79,22 @@ def initialize_socket(app):
     @socketio.on('reject_call')
     def handle_reject_call(data):
         """Handle rejecting a video call."""
-        caller = data.get('to')
+        receiver = data.get('to')
+        caller = None
 
-        if caller in users:
-            print(f"Call rejected by {caller}")
-            emit('call_rejected', room=users[caller])
+        # Find who is rejecting the call
+        for user, sid in users.items():
+            if sid == request.sid:
+                caller = user
+                break
+
+        if receiver in users:
+            print(f"{caller} rejected the call.")  # Log the correct rejection
+            # Emit the 'call_rejected' event to the caller with the correct 'from' data
+            emit('call_rejected', {'from': receiver}, room=users[caller])  # Send 'receiver' as the one who rejected the call
         else:
-            print(f"Caller {caller} not found.")
+            print(f"Receiver {receiver} not found.")
+
 
 
 
@@ -100,6 +109,26 @@ def initialize_socket(app):
             emit('ice-candidate', {'candidate': candidate}, room=users[receiver])  # Forward as-is
         else:
             print(f"Receiver {receiver} not found for ICE candidate exchange.")
+
+
+    @socketio.on('call_ended')
+    def handle_call_ended(data):
+        receiver = data.get('to')
+        print(f"Emitting call_ended event to: {receiver}")
+
+        caller = None
+        for user, sid in users.items():
+            if sid == request.sid:
+                caller = user
+                break
+
+        if receiver in users:
+            print(f"{caller} ended the call with {receiver}")
+            emit('call_ended', {'from': caller}, room=users[receiver])
+        else:
+            print(f"Receiver {receiver} not found.")
+        emit('call_ended', {'from': 'self'}, room=request.sid)
+
 
     @socketio.on('disconnect')
     def handle_disconnect():
