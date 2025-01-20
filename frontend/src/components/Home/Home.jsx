@@ -20,6 +20,7 @@ import ChatBox from "../ChatBox/ChatBox";
 
 const Home = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [expandedCategories, setExpandedCategories] = useState({});
     const [tasksByCategory, setTasksByCategory] = useState({});
     const [isSettingsClicked, setIsSettingsClicked] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -32,10 +33,13 @@ const Home = () => {
     const [isKanbanOpen, setIsKanbanOpen] = useState(false);
     const disconnectSocketRef = useRef(null);
 
+
+
+
     const handleDisconnectSocket = () => {
-      if (disconnectSocketRef.current) {
-        disconnectSocketRef.current(); // Call the disconnectSocket function in ChatBox
-      }
+        if (disconnectSocketRef.current) {
+            disconnectSocketRef.current(); // Call the disconnectSocket function in ChatBox
+        }
     };
     // const navigate = useNavigate();
 
@@ -92,7 +96,7 @@ const Home = () => {
 
     const refreshTasks = () => {
         fetchTasks(); // Re-fetch tasks after a new task is added
-      };
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -173,6 +177,9 @@ const Home = () => {
                                 category="Important"
                                 title="Important"
                                 tasks={tasksByCategory["Important"]}
+                                isExpanded={expandedCategories["Important"]} // Pass the expanded state
+                                // handleShowMore={() => handleShowMore(Important)}
+
                             // isShaking={isShaking}
                             />
                         </div>
@@ -184,6 +191,10 @@ const Home = () => {
                                 category="Work"
                                 tasks={tasksByCategory["Work"]}
                                 isShaking={isShaking}
+                                isExpanded={expandedCategories["Work"]} // Pass the expanded state
+                                // handleShowMore={() => handleShowMore(Work)}
+
+                                
                             />
                         </div>
                         <div className="category-wrapper" >
@@ -193,6 +204,7 @@ const Home = () => {
                                 category="Personal"
                                 tasks={tasksByCategory["Personal"]}
                                 isShaking={isShaking}
+                                isExpanded={expandedCategories["Personal"]}
                             />
                         </div>
                     </div>
@@ -206,6 +218,7 @@ const Home = () => {
                                 title="Others"
                                 tasks={tasksByCategory["Others"]}
                                 isShaking={isShaking}
+                                isExpanded={expandedCategories["Others"]}
 
                             />
                         </div>
@@ -277,8 +290,8 @@ const Home = () => {
 
 
             {isKanbanOpen && (
-          <KanbanBoard onClose={toggleKanban} onTaskAdded={refreshTasks} />
-        )}
+                <KanbanBoard onClose={toggleKanban} onTaskAdded={refreshTasks} />
+            )}
 
 
         </div>

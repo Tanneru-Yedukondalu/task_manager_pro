@@ -10,6 +10,9 @@ from routes.all_users import all_users_blueprint
 # from routes.profile import profile_blueprint
 from dotenv import load_dotenv
 from config import Config
+import ssl
+import eventlet
+import eventlet.wsgi
 from sockets import initialize_socket  # Import the function to initialize the socket
 
 # Load environment variables from .env file
@@ -42,4 +45,22 @@ def health_check():
 
 if __name__ == "__main__":
     # socketio.run(app, host="0.0.0.0", debug=True, port=5000)
-    socketio.run(app, port=5000, host="0.0.0.0", debug=False, ssl_context=('/home/mv/Desktop/Task_Manager_Pro/cert.pem', '/home/mv/Desktop/Task_Manager_Pro/key.pem'))
+    # socketio.run(app, port=5000, host="0.0.0.0", debug=False, ssl_context=('/home/mv/Desktop/Task_Manager_Pro/cert.pem', '/home/mv/Desktop/Task_Manager_Pro/key.pem'))
+
+    # Create an SSL context
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(
+        certfile="/home/mv/Desktop/Task_Manager_Pro/cert.pem",
+        keyfile="/home/mv/Desktop/Task_Manager_Pro/key.pem"
+    )
+
+    # Create a secure listener for eventlet
+    listener = eventlet.wrap_ssl(
+        eventlet.listen(("0.0.0.0", 5000)),
+        certfile="/home/mv/Desktop/Task_Manager_Pro/cert.pem",
+        keyfile="/home/mv/Desktop/Task_Manager_Pro/key.pem",
+        server_side=True
+    )
+
+    # Run the app with the secure listener
+    eventlet.wsgi.server(listener, app)

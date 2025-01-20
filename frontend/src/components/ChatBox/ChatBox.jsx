@@ -13,6 +13,7 @@ import { io } from 'socket.io-client';
 import UserIcon from "../../assets/userprofile.jpg";
 import VideoCall from '../VideoCall/VideoCall';
 import { fetchAllUsers } from '../../api';
+import GroupModal from '../GroupModal/GroupModal';
 
 const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
@@ -21,6 +22,16 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const [chatHistories, setChatHistories] = useState({});
   const [inputMessage, setInputMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);
+
+
+
+
+
+  const [groups, setGroups] = useState([]); // Store groups
+  // const [receiver, setReceiver] = useState(null); // Current receiver (user or group)
+  const [showGroupModal, setShowGroupModal] = useState(false);
+
+
   const [receiver, setReceiver] = useState('');
   const [callOffer, setCallOffer] = useState(null); // Store the incoming offer
   const [callState, setCallState] = useState("idle"); // idle, calling, receiving, inCall
@@ -28,6 +39,51 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const peerConnection = useRef(null);
   const iceCandidateQueue = useRef([]); // Queue to store ICE candidates
+
+
+
+  const handleCreateGroup = (group) => {
+    // Add the creator (current user) to the group members
+    const updatedGroup = { ...group, members: [...group.members, username] };
+    setGroups((prev) => [...prev, updatedGroup]);
+
+    // Notify the server about the new group
+    socket.emit('create_group', {
+      groupName: updatedGroup.name,
+      members: updatedGroup.members,
+    });
+
+    console.log("Created a group:", updatedGroup);
+  };
+
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('new_group', (group) => {
+        console.log('New group received:', group);
+        // Add the group to the state
+        setGroups((prev) => {
+          // Prevent duplicates
+          if (prev.some((g) => g.name === group.groupName)) return prev;
+          return [...prev, { name: group.groupName, members: group.members }];
+        });
+      });
+
+      return () => {
+        socket.off('new_group');
+      };
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    console.log('Updated groups:', groups);
+  }, [groups]);
+
+
+
+
+
+
 
   const configuration = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
@@ -38,7 +94,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
       transports: ['websocket', 'polling'], // Use both WebSocket and polling as fallback
       secure: true, // Explicitly use secure connections
       reconnectionAttempts: 5, // Retry connection if it fails
-    }); 
+    });
 
 
     // const socketIo = io('http://localhost:5000'); // Connect to Flask-SocketIO server
@@ -54,11 +110,17 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
       });
 
       socketIo.on('receive_message', (data) => {
-        setChatHistories((prevHistories) => ({
-          ...prevHistories,
-          [data.sender]: [...(prevHistories[data.sender] || []), data],
-        }));
+        setChatHistories((prevHistories) => {
+          // Determine the chat key: group name for group messages, sender for individual messages
+          const chatKey = data.group || data.sender;
+      
+          return {
+            ...prevHistories,
+            [chatKey]: [...(prevHistories[chatKey] || []), data],
+          };
+        });
       });
+      
 
       //Receive incoming call offer
 
@@ -134,19 +196,19 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
     };
   }, [socket]);
 
-  
+
 
   useEffect(() => {
     if (socket) {
       // Listen for the call_ended event
       socket.on("call_ended", ({ from }) => {
         console.log(`Call ended by: ${from}`);
-  
+
         // Reset the call state and UI
         setCallState("idle");
         setLocalStream(null);
         setRemoteStream(null);
-  
+
         // Close peer connection
         if (peerConnection.current) {
           peerConnection.current.close();
@@ -154,7 +216,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
         }
       });
     }
-  
+
     return () => {
       if (socket) {
         socket.off("call_ended");
@@ -169,20 +231,42 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
       return;
     }
     if (inputMessage.trim()) {
-      const message = { sender: username, receiver, message: inputMessage };
-
+      const isGroup = groups.some((group) => group.name === receiver);
+      const message = {
+        sender: username,
+        receiver,
+        message: inputMessage,
+        group: isGroup ? receiver : null, // Add group if this is a group message
+      };
+  
       // Emit the message to the backend
       socket.emit('send_message', message);
-
-      // Save message to chat history
-      setChatHistories((prevHistories) => ({
-        ...prevHistories,
-        [receiver]: [...(prevHistories[receiver] || []), message],
-      }));
-
+  
+      // Save the message locally to the chat history
+      setChatHistories((prevHistories) => {
+        const chatKey = isGroup ? receiver : receiver; // For individual chats, use receiver's name
+        return {
+          ...prevHistories,
+          [chatKey]: [...(prevHistories[chatKey] || []), message],
+        };
+      });
+  
+      // Clear the input field
       setInputMessage('');
     }
   };
+  
+  console.log("show chat histories", chatHistories);
+
+
+
+
+
+
+
+
+
+
 
   const startLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -252,7 +336,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
     // Notify the backend about the call end
     socket.emit('call_ended', { to: receiver });
   };
-  
+
 
 
 
@@ -283,23 +367,31 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
 
 
-useEffect(() => {
-  const loadAllUsers = async () => {
-    try {
-      const users = await fetchAllUsers();
-      const filteredUsers = users.filter((user) => user.username !== username); // Exclude current user
-      setAllUsers(filteredUsers.map((user) => user.username));
-    } catch (error) {
-      console.error("Error loading all users:", error);
+  useEffect(() => {
+    const loadAllUsers = async () => {
+      try {
+        const users = await fetchAllUsers();
+        const filteredUsers = users.filter((user) => user.username !== username); // Exclude current user
+        setAllUsers(filteredUsers.map((user) => user.username));
+      } catch (error) {
+        console.error("Error loading all users:", error);
+      }
+    };
+
+    loadAllUsers();
+  }, [username]); // Make sure username is part of the dependencies
+
+
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Prevent the default behavior (new line in input)
+      e.preventDefault();
+  
+      // Call the send message function when Enter is pressed
+      handleSendMessage();
     }
   };
-
-  loadAllUsers();
-}, [username]); // Make sure username is part of the dependencies
-
-  
-
-
 
 
 
@@ -315,31 +407,56 @@ useEffect(() => {
             <div className="onlineusers">
               <ul>
                 {allUsers.map((user, index) => {
-                   const isOnline = onlineUsers.includes(user);
-                   return (
-                  <li
-                    key={index}
-                    className={`user-item ${receiver === user ? 'selected' : ''}`}
-                    onClick={() => setReceiver(user)}
-                  >
-                    {/* <span className="online-dot"></span> */}
-                    {/* Status Indicator */}
-            <span
-              className={`status-dot ${isOnline ? 'online' : 'offline'}`} // Add appropriate classes for styling
-            ></span>
+                  const isOnline = onlineUsers.includes(user);
+                  return (
+                    <li
+                      key={index}
+                      className={`user-item ${receiver === user ? 'selected' : ''}`}
+                      onClick={() => setReceiver(user)}
+                    >
+                      {/* <span className="online-dot"></span> */}
+                      {/* Status Indicator */}
+                      <span
+                        className={`status-dot ${isOnline ? 'online' : 'offline'}`} // Add appropriate classes for styling
+                      ></span>
 
 
-                    <img
-                      src={UserIcon}
-                      alt={`${user}'s avatar`}
-                      className="user-avatar"
-                    />
-                    {user}
-                  </li>
-                   )
-})}
+                      <img
+                        src={UserIcon}
+                        alt={`${user}'s avatar`}
+                        className="user-avatar"
+                      />
+                      {user}
+                    </li>
+                  )
+                })}
               </ul>
+
+
+              <button className="create-group-button" onClick={() => setShowGroupModal(true)}>
+                Create Group
+              </button>
             </div>
+
+            {/* Groups Section */}
+            {groups.length > 0 && (
+              <div className="groups-section">
+                <h4>Groups</h4>
+                <ul>
+                  {groups.map((group, index) => (
+                    <li
+                      key={index}
+                      className={`group-item ${receiver === group.name ? 'selected' : ''}`}
+                      onClick={() => setReceiver(group.name)} // Set group name as receiver
+                    >
+                      {group.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+
           </div>
 
           {/* Chat Messages */}
@@ -370,31 +487,45 @@ useEffect(() => {
             </div>
             <div className="chatbox-body">
               {receiver ? (
-                <div className="messages">
-                  {(chatHistories[receiver] || []).map((message, index) => (
-                    <div
-                      key={index}
-                      className={`message ${message.sender === username ? 'self' : 'other'
-                        }`}
-                    >
-                      {message.sender !== username && (
-                        <span className="message-sender">{message.sender}</span>
-                      )}
-                      <p className="message-content">{message.message}</p>
-                    </div>
-                  ))}
-                </div>
+               <div className="messages">
+               {(chatHistories[receiver] || [])
+                 .filter((message) => {
+                   const isGroupChat = groups.some((group) => group.name === receiver);
+                   if (isGroupChat) {
+                     return message.group === receiver; // Show group messages for this group
+                   }
+                   return !message.group && (message.sender === username || message.sender === receiver); // Show messages for individual chats
+                 })
+                 .map((message, index) => (
+                   <div
+                     key={index}
+                     className={`message ${message.sender === username ? 'self' : 'other'}`}
+                   >
+                     {message.sender !== username && (
+                       <span className="message-sender">
+                         {message.sender}{' '}
+                         {/* {message.group ? `(in ${message.group})` : ''} */}
+                       </span>
+                     )}
+                     <p className="message-content">{message.message}</p>
+                   </div>
+                 ))}
+             </div>
+             
+              
               ) : (
                 <div className="placeholder">
-                  <p>Select a user to start chatting.</p>
+                  <p>Select a user or group to start chatting.</p>
                 </div>
               )}
             </div>
+
             <div className="chatbox-footer">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyDown} // Add the event listener for Enter key
                 placeholder="Type a message..."
                 className="message-input"
                 disabled={!receiver} // Disable input if no user is selected
@@ -424,6 +555,16 @@ useEffect(() => {
 
           />
         ) : null}
+
+
+
+        {showGroupModal && (
+          <GroupModal
+            onlineUsers={onlineUsers}
+            onClose={() => setShowGroupModal(false)}
+            onCreateGroup={handleCreateGroup}
+          />
+        )}
 
 
 

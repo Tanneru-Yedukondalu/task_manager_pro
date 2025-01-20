@@ -6,6 +6,9 @@ from flask import request
 # Dictionary to store online users
 users = {}
 
+groups = {}  # Dictionary to store group information {group_name: [members]}
+
+
 def initialize_socket(app):
     """Initialize the socket with the Flask app."""
     socketio = SocketIO(app, cors_allowed_origins="https://10.50.48.11:5173")  # Allow connections from frontend
@@ -27,21 +30,42 @@ def initialize_socket(app):
             # Broadcast to all clients about the new online user
             emit('user_online', list(users.keys()), broadcast=True)
 
+             # Send all groups this user is part of
+            user_groups = [group for group, members in groups.items() if username in members]
+            for group in user_groups:
+                emit('new_group', {'groupName': group, 'members': groups[group]}, room=users[username])
+
     @socketio.on('send_message')
     def handle_message(data):
-        """Handle sending a message to another user."""
+        """Handle sending a message to another user or group."""
         message = data.get('message')
         receiver = data.get('receiver')
         sender = data.get('sender')
+        group = data.get('group')
 
-        print(f"Message received: {message} from {sender} to {receiver}")  # Check if the message is received
+        print(f"Message received: {message} from {sender} to {receiver}")
 
-        if receiver in users:
-            # Emit the message to the receiver
-            emit('receive_message', {'sender': sender, 'message': message}, room=users[receiver])
+        if group:  # Handle group messages
+            if group in groups:
+                print(f"Broadcasting message to group: {group}")
+                for member in groups[group]:
+                    if member != sender and member in users:
+                        emit('receive_message', {
+                            'sender': sender,
+                            'message': message,
+                            'group': group
+                        }, room=users[member])
+            else:
+                print(f"Group {group} not found.")
+        elif receiver in users:  # Handle individual messages
+            print(f"Sending message to user: {receiver}")
+            emit('receive_message', {
+                'sender': sender,
+                'message': message,
+                'group': None
+            }, room=users[receiver])
         else:
-            print(f"Receiver {receiver} not found in users")
-
+            print(f"Receiver {receiver} not found.")
 
     @socketio.on('start_call')
     def handle_start_call(data):
@@ -128,6 +152,39 @@ def initialize_socket(app):
         else:
             print(f"Receiver {receiver} not found.")
         emit('call_ended', {'from': 'self'}, room=request.sid)
+
+
+
+
+
+
+    @socketio.on('create_group')
+    def handle_create_group(data):
+        group_name = data.get('groupName')
+        members = data.get('members')
+        creator = None
+
+        # Identify the creator of the group
+        for user, sid in users.items():
+            if sid == request.sid:
+                creator = user
+                break
+
+        if group_name and members:
+            # Add the creator to the members list if not already included
+            if creator and creator not in members:
+                members.append(creator)
+
+            groups[group_name] = members
+            print(f"Group created: {group_name} with members {members}")
+
+            # Notify all group members about the new group
+            for member in members:
+                if member in users:
+                    emit('new_group', {'groupName': group_name, 'members': members}, room=users[member])
+                else:
+                    print(f"User {member} is not currently online to receive group notification.")
+
 
 
     @socketio.on('disconnect')

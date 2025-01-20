@@ -1,0 +1,85 @@
+/* Group Modal Overlay */
+.group-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+  }
+  
+  /* Group Modal Content */
+  .group-modal {
+    width: 400px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .group-modal h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333333;
+  }
+  
+  .group-modal input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+  
+  .user-selection {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .user-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .user-option input {
+    margin-right: 10px;
+  }
+  
+  .create-group-btn,
+  .cancel-btn {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .create-group-btn {
+    background-color: #007bff;
+    color: white;
+    margin-right: 10px;
+  }
+  
+  .create-group-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .cancel-btn {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #c0c0c0;
+  }
+  
