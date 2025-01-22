@@ -12,7 +12,7 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import { io } from 'socket.io-client';
 import UserIcon from "../../assets/userprofile.jpg";
 import VideoCall from '../VideoCall/VideoCall';
-import { fetchAllUsers } from '../../api';
+import { fetchAllUsers, fetchMessages } from '../../api';
 import GroupModal from '../GroupModal/GroupModal';
 
 const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
@@ -40,6 +40,25 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const peerConnection = useRef(null);
   const iceCandidateQueue = useRef([]); // Queue to store ICE candidates
 
+// Load messages when the receiver (user or group) changes
+useEffect(() => {
+  const loadMessages = async () => {
+    try {
+      if (receiver) {
+        // Fetch messages for the selected receiver (user or group)
+        const messages = await fetchMessages(receiver, null); // Pass the receiver and group (if any)
+        setChatHistories((prevHistories) => ({
+          ...prevHistories,
+          [receiver]: messages, // Update the chat history for the selected receiver
+        }));
+      }
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
+
+  loadMessages();
+}, [receiver]); // Trigger this effect whenever the receiver changes
 
 
   const handleCreateGroup = (group) => {
@@ -405,6 +424,8 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
               <h4>Online Users</h4>
             </div>
             <div className="onlineusers">
+
+              
               <ul>
                 {allUsers.map((user, index) => {
                   const isOnline = onlineUsers.includes(user);
@@ -459,6 +480,14 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
           </div>
 
+
+
+
+
+
+
+
+
           {/* Chat Messages */}
           <div className="chatbox-content">
             <div className="chatbox-header">
@@ -485,6 +514,13 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
                 &times;
               </button>
             </div>
+
+
+
+
+
+
+
             <div className="chatbox-body">
               {receiver ? (
                <div className="messages">
@@ -560,6 +596,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
         {showGroupModal && (
           <GroupModal
+            allUsers={allUsers}
             onlineUsers={onlineUsers}
             onClose={() => setShowGroupModal(false)}
             onCreateGroup={handleCreateGroup}

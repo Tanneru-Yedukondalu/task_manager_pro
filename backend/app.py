@@ -7,6 +7,7 @@ from routes.signup import signup_blueprint
 from routes.login import login_blueprint
 from routes.kanban import kanban_blueprint
 from routes.all_users import all_users_blueprint
+from routes.messages import messages_blueprint
 # from routes.profile import profile_blueprint
 from dotenv import load_dotenv
 from config import Config
@@ -36,6 +37,7 @@ app.register_blueprint(signup_blueprint)
 app.register_blueprint(login_blueprint)
 app.register_blueprint(kanban_blueprint)
 app.register_blueprint(all_users_blueprint)
+app.register_blueprint(messages_blueprint)
 # app.register_blueprint(profile_blueprint)
 
 # Health check route

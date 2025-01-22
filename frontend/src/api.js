@@ -232,3 +232,34 @@ export const fetchAllUsers = async () => {
 
 
 
+// Fetch messages
+export const fetchMessages = async (receiver, group = null) => {
+  try {
+    let url = `${API_URL}/messages?receiver=${receiver}`;
+    if (group) {
+      url += `&group=${group}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Fetching messages for:", receiver); // For debugging
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch messages");
+    }
+
+    const data = await response.json();
+    return data.messages; // Return the list of messages from the response
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    throw error; // Rethrow the error to be handled by the calling function
+  }
+};
+
+
+

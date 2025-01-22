@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 from bson import ObjectId  # Import ObjectId to work with MongoDB ObjectId
+from datetime import datetime
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,6 +18,8 @@ db = client.get_database(db_name)
 # Define the collections
 users_collection = db['users']  # Defining the users collection
 tasks_collection = db['tasks']  # Defining the tasks collection
+messages_collection = db['messages'] # Defining the messages collection
+groups_collection = db['groups'] #Defining the groups collection
 
 # Functions to interact with the database
 
@@ -40,6 +43,23 @@ def create_task(task_data):
 def get_all_users():
     users = users_collection.find({}, {"_id": 0, "username": 1})  # Fetch only usernames, exclude _id
     return list(users)
+
+
+
+# Function to save a message to the database
+def save_message(sender, receiver, message, group=None):
+    timestamp = datetime.utcnow()  # Record the time the message was sent
+
+    message_data = {
+        'sender': sender,
+        'receiver': receiver,
+        'message': message,
+        'timestamp': datetime.utcnow().isoformat(),
+        'group': group if group else None  # Store group name if it's a group message
+    }
+
+    # Insert the message into the messages collection
+    result = messages_collection.insert_one(message_data)
 
 # Return the database object to be used elsewhere
 def get_db():

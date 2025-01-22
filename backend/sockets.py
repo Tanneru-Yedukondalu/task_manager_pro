@@ -1,6 +1,10 @@
 # sockets.py
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask import request
+from database import save_message, groups_collection
+from datetime import datetime
+
+
 
 
 # Dictionary to store online users
@@ -8,12 +12,27 @@ users = {}
 
 groups = {}  # Dictionary to store group information {group_name: [members]}
 
+def load_groups_from_db():
+    """Load groups from the database into the in-memory groups dictionary."""
+    global groups
+    groups.clear()  # Clear the dictionary to prevent duplicates
+    all_groups = groups_collection.find()  # Fetch all groups from the database
+    for group in all_groups:
+        group_name = group.get('group_name')  # Use 'group_name' instead of 'name'
+        members = group.get('members', [])  # Default to an empty list if 'members' is missing
+        if group_name:  # Ensure group_name exists before adding to the dictionary
+            groups[group_name] = members
+    print(f"Loaded groups from database: {groups}")
+
+
+
 
 def initialize_socket(app):
     """Initialize the socket with the Flask app."""
     socketio = SocketIO(app, cors_allowed_origins="https://10.50.48.11:5173")  # Allow connections from frontend
 
-
+    # Load groups from the database when the backend starts
+    load_groups_from_db()
 
     @socketio.on('connect')
     def handle_connect():
@@ -30,6 +49,10 @@ def initialize_socket(app):
             # Broadcast to all clients about the new online user
             emit('user_online', list(users.keys()), broadcast=True)
 
+
+            # Fetch groups this user belongs to
+            user_groups = groups_collection.find({'members': username})
+
              # Send all groups this user is part of
             user_groups = [group for group, members in groups.items() if username in members]
             for group in user_groups:
@@ -44,6 +67,8 @@ def initialize_socket(app):
         group = data.get('group')
 
         print(f"Message received: {message} from {sender} to {receiver}")
+
+        save_message(sender, receiver, message, group)
 
         if group:  # Handle group messages
             if group in groups:
@@ -174,6 +199,16 @@ def initialize_socket(app):
             # Add the creator to the members list if not already included
             if creator and creator not in members:
                 members.append(creator)
+
+            # Save the group to the database
+            group_data = {
+                'group_name': group_name,
+                'members': members,
+                'created_at': datetime.utcnow()  # Add a timestamp for group creation
+            }
+
+             # Insert the group data into the database
+            result = groups_collection.insert_one(group_data)
 
             groups[group_name] = members
             print(f"Group created: {group_name} with members {members}")
