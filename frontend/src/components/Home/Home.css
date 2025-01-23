@@ -11,6 +11,8 @@
 
 }
 
+
+
 .a {
     width: 20%;
     height: 50%;
@@ -34,6 +36,8 @@
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(32, 32, 32, 0.2);
     cursor: pointer;
+    
+    
 }
 
 .b {
@@ -75,6 +79,8 @@
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(32, 32, 32, 0.2);
     cursor: pointer;
+    
+    
 }
 
 
@@ -107,7 +113,7 @@
     width: 100%;
     height: 100%;
     gap: 10px;
-    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/backgorund.jpg");
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/login2.jpg");
     /* background-size: cover; */
     background-position: center;
     filter: brightness(1.2); 
@@ -142,7 +148,7 @@
     height: 100%;
     padding: 5px;
     font-size: 24px;
-    border: 2px solid black;
+    border: 2px solid white;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -153,6 +159,7 @@
     cursor: pointer;
     position: relative;
     background-color: #c5edf0dc;
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/login1.png");
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -242,6 +249,7 @@
     cursor: pointer;
     overflow-y: auto;
     /* Add scroll for overflow */
+    
 }
 
 .bold {
@@ -384,7 +392,7 @@
     height: 100%;
     padding: 15px;
     font-size: large;
-    border: 2px solid black;
+    border: 2px solid white;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -396,6 +404,6 @@
     overflow-y: auto;
     background-color: #c5edf0dc;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-   
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/login1.png");
     /* Add scroll for overflow */
 }

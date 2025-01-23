@@ -31,7 +31,7 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
         const updatedSelectedTasks = selectedTaskNames.includes(taskName)
             ? selectedTaskNames.filter(t => t !== taskName)
             : [...selectedTaskNames, taskName];
-        
+
         setSelectedTaskNames(updatedSelectedTasks); // Update selected tasks
         console.log("Selected task names for deletion:", updatedSelectedTasks);  // Check if selected tasks are correct
     };
@@ -43,7 +43,7 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
         }
         setShowConfirmModal(true);
     };
-    
+
 
     const handleDeleteConfirm = async () => {
         try {
@@ -51,13 +51,13 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
                 setError("No tasks selected for deletion.");
                 return;
             }
-    
+
             // Call API to delete selected tasks
             await deleteTasks(selectedTaskNames);
-    
+
             // Fetch updated tasks list from the server
             await fetchTasks();
-    
+
             // Reset state after deletion
             setSelectedTaskNames([]);
             setError(""); // Clear error
@@ -77,10 +77,10 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
     };
 
 
-    
-    
-    
-    
+
+
+
+
 
     const handleSaveTask = async (updatedTask) => {
         try {
@@ -134,12 +134,14 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
                                     <tr>
                                         {isEditMode && !isDeleteMode && !isViewMode && <th>Select</th>}
                                         {!isEditMode && isDeleteMode && !isViewMode && <th>Select</th>}
-                                        
+
                                         <th>Task Name</th>
                                         <th>Description</th>
+                                        <th>Priority</th>
                                         <th>Created On</th>
                                         <th>Deadline</th>
                                         <th>Status</th>
+                                        <th>Created By</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -166,26 +168,54 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
                                                     />
                                                 </td>
                                             )}
-                                            <td>{task.taskName}</td>
+                                            <td
+                                            style={{
+                                                fontWeight: "bold"
+                                            }}>{task.taskName}</td>
                                             <td>{task.description}</td>
+                                            <td
+                                                style={{
+                                                    color:
+                                                        task.priority === "High"
+                                                            ? "red"
+                                                            : task.priority === "Medium"
+                                                                ? "orange"
+                                                                : "green", // Set text color dynamically
+                                                    fontWeight: "bold", // Apply bold text
+                                                }}
+                                            >
+                                                {task.priority || "Not Set"}
+                                            </td>
+
+
+                                            {/* <td>{task.priority || "Not Set"}</td> */}
                                             <td>{task.createdOn}</td>
                                             <td>{task.deadline}</td>
                                             <td>{task.status}</td>
+                                            <td
+                                                 style={{
+                                                    fontWeight: "bold",
+                                                    color:
+                                                      task.created_by === localStorage.getItem("username")
+                                                        ? "black" // Default color for "Myself"
+                                                        : "blue", // Blue for others
+                                                  }}
+                                            >{task.created_by === localStorage.getItem("username") ? "Myself" : task.created_by || "Unknown"}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            { isDeleteMode && (
+                            {isDeleteMode && (
                                 <div className="delete-button-container">
-                                <button
-                                    onClick={openConfirmModal}
-                                    className="delete-task-button"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                                    <button
+                                        onClick={openConfirmModal}
+                                        className="delete-task-button"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             )}
-                            
+
 
 
                             {/* Show the "Select" button after selecting a task */}
@@ -200,7 +230,7 @@ const TaskDetailsPopup = ({ category, tasks, onClose, isEditMode, fetchTasks, is
                                 </div>
                             )}
                         </>
-                    ):(
+                    ) : (
                         <div className="no-tasks">No tasks available</div>
                     )
                 )}

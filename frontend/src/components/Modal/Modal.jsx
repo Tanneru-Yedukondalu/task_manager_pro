@@ -2,7 +2,7 @@ import React from "react";
 import Form from "../Form/Form";
 import "./Modal.css";
 
-const Modal = ({ isFormOpen, closeForm }) => {
+const Modal = ({ isFormOpen, closeForm, selectedUser, selectedUserId }) => {
   return (
     isFormOpen && (
       <div className="modal">
@@ -10,7 +10,7 @@ const Modal = ({ isFormOpen, closeForm }) => {
           <button className="close-button" onClick={closeForm}>
             &times;
           </button>
-          <Form />
+          <Form selectedUser={selectedUser} selectedUserId={selectedUserId}/>
         </div>
       </div>
     )

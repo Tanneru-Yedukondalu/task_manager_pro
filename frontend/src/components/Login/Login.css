@@ -1,32 +1,28 @@
-/* Login.css */
-
 .login-container {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #cddff8;
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/signUp.png");
+    background-size: cover;
+    background-position: center;
     padding: 20px;
-    background-image: 
-    url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/bg.jpg");
-    
-    /* background: url("/home/mv/Desktop/Task Manager Pro/frontend/src/assets/backgorund.jpg"); */
+}
 
+.login-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/new_background.png");
+   
 }
-.abcd{
-    background-color: rgb(219, 231, 233);
-    padding: 15px;
-    border-radius: 10px;
-    width: 30%;
-    height: 50%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-}
+
 .login-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
     margin-bottom: 20px;
     color: #333;
@@ -34,34 +30,34 @@
 
 .login-error,
 .login-success {
-    color: #ff0000; /* Red for error */
     font-size: 1rem;
     margin-bottom: 10px;
 }
 
+.login-error {
+    color: #ff4d4d; /* Bright red for errors */
+}
+
 .login-success {
-    color: #28a745; /* Green for success */
+    color: #28a745; /* Bright green for success */
 }
 
 .login-form {
-    background-color: #e0eaf3;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .login-field {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .login-label {
     font-size: 1rem;
     font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     color: #333;
 }
 
@@ -74,44 +70,79 @@
     box-sizing: border-box;
 }
 
-.login-input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.login-actions {
+.password-input-container {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
-.login-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+.password-toggle {
+    margin-left: -30px;
     cursor: pointer;
+    color: #888;
+}
+
+.password-toggle:hover {
+    color: #007bff;
+}
+
+.forgot-password {
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 10px;
 }
 
-.login-button:hover {
-    background-color: #0056b3;
+.forgot-password-link {
+    font-size: 0.9rem;
+    color: #007bff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
+.forgot-password-link:hover {
+    color: #0056b3;
+}
+
+.login-button,
 .signup-redirect {
+    
     width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 25px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Login Button */
+.login-button {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    color: white;
+    margin-bottom: 15px;
+}
+
+.login-button:hover {
+    background: linear-gradient(90deg, #0056b3, #007bff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sign Up Button */
+.signup-redirect {
+    background: linear-gradient(90deg, #28a745, #218838);
+    color: white;
 }
 
 .signup-redirect:hover {
-    background-color: #218838;
+    background: linear-gradient(90deg, #218838, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
+

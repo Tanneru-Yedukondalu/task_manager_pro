@@ -174,6 +174,8 @@ def handle_tasks():
                 "taskName": task_data["taskName"],
                 "description": task_data["description"],
                 "category": task_data["category"],
+                "priority" : task_data["priority"],
+                "created_by" : task_data["created_by"],
                 "deadline": task_data["deadline"],
                 "createdOn": task_data["createdOn"],
                 "status": task_data["status"],
@@ -215,6 +217,8 @@ def update_tasks():
                         "taskName": task_data['taskName'],
                         "description": task_data['description'],
                         "category": task_data['category'],
+                        "priority" : task_data["priority"],
+                        "created_by" : task_data["created_by"],
                         "deadline": task_data['deadline'],
                         "createdOn": task_data['createdOn'],
                         "status": task_data['status']

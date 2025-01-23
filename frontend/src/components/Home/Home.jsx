@@ -56,6 +56,14 @@ const Home = () => {
         fetchTasks();
     };
 
+
+    const toggleKanban = async () => {
+        setIsFormOpen(false);
+        console.log("kanban Closed");
+        fetchTasks();
+        await fetchTasksFromBackend();
+    };
+
     const handleSettingsClick = () => {
         console.log("Settings button clicked!");
         setIsSettingsClicked(!isSettingsClicked);
@@ -290,7 +298,7 @@ const Home = () => {
 
 
             {isKanbanOpen && (
-                <KanbanBoard onClose={toggleKanban} onTaskAdded={refreshTasks} />
+                <KanbanBoard onClose={toggleKanban} onTaskAdded={refreshTasks}  />
             )}
 
 

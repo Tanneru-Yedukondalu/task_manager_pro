@@ -5,7 +5,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #b0f3f0, #437575); /* Gradient background */
+    /* background: linear-gradient(135deg, #b0f3f0, #437575);  */
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/login1.png");
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
@@ -38,6 +39,11 @@
     cursor: pointer;
 }
 
+.login-btn:hover{
+    background-color: rgb(10, 125, 233); /* Change background color to blue on hover */
+    color: black;  
+}
+
 /* Title in the center of the header */
 .title {
     width: 60%;
@@ -45,7 +51,7 @@
     padding: 5px;
     font-size: 28px;
     font-weight: bolder;
-    color: white; /* White text color for contrast */
+    color: black; /* White text color for contrast */
     text-align: center;
 }
 

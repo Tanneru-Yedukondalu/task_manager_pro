@@ -8,6 +8,7 @@ import KanbanBoard from "../KanbanBoard/KanbanBoard";
 import ProfileModal from "../Profile/ProfileModal";
 import SettingsDropdown from "../SettingsDropdown/SettingsDropdown"; // Import the dropdown
 import "./Header.css";
+import { fetchTasksFromBackend } from "../../api";
 
 const Header = ({handleLogout}) => {
   const navigate = useNavigate();
@@ -23,8 +24,11 @@ const Header = ({handleLogout}) => {
   };
 
   // Close Kanban board modal
-  const closeKanbanBoard = () => {
-    setIsKanbanOpen(false); // Hide Kanban board
+  const closeKanbanBoard = async () => {
+    setIsKanbanOpen(false); 
+    await fetchTasksFromBackend();
+    // Hide Kanban board
+
   };
 
   // Logout user

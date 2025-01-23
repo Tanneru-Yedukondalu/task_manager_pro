@@ -10,109 +10,152 @@
     background-color: #cddff8;
     padding: 20px;
     background-image: 
-    url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/bg.jpg");
+    url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/signUp.png");
     
 }
 
-.abcdef{
-    background-color: rgb(219, 231, 233);
+.signUpForm{
+    /* background-color: rgb(218, 206, 235); */
     padding: 15px;
     border-radius: 10px;
-    width: 100%;
-    max-width: 400px;
+    width: 40%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    /* border: 1px solid red; */
+    background-image: 
+    url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/new_background.png");
+    
 }
 
+/* Title */
 .signup-title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 1.5rem;
     color: #333;
 }
 
-.signup-error,
-.signup-success {
-    color: #ff0000; /* Red for error */
-    font-size: 1rem;
-    margin-bottom: 10px;
-}
-
-.signup-success {
-    color: #28a745; /* Green for success */
-}
-
+/* Form */
 .signup-form {
-    background-color: #e0eaf3;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 90%;
 }
 
+/* Form fields (full width line) */
 .signup-field {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Half-width fields (side by side) */
+.signup-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.signup-row .signup-field {
+    flex: 1;
+}
+
+
+/* Username field (side by side) */
+.signup-inline {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    /* border: 1px solid; */
+}
+
+.signup-inline label {
+    flex-shrink: 0;
+    font-size: 16px;
+    color: #0e0d0d;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+}
+
+.signup-inline input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+}
+
+.signup-inline input:focus {
+    border-color: #007bff;
+}
+
+
+/* Labels and Inputs */
 .signup-label {
-    font-size: 1rem;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
-    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+    color: #131212;
 }
 
 .signup-input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    box-sizing: border-box;
+    font-size: 14px;
+    outline: none;
 }
 
 .signup-input:focus {
     border-color: #007bff;
-    outline: none;
 }
 
+/* Buttons */
 .signup-actions {
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-around;
+    margin-top: 1.5rem;
+}
+
+.signup-button,
+.login-redirect {
+    padding: 0.75rem 1.5rem;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .signup-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-bottom: 10px;
+    background: #007bff;
+    color: #fff;
 }
 
 .signup-button:hover {
-    background-color: #0056b3;
+    background: #0056b3;
 }
 
 .login-redirect {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
+    background: #f4f4f4;
+    color: #0f0d0d;
 }
 
 .login-redirect:hover {
-    background-color: #218838;
+    background: #9e9d9d;
+}
+
+/* Error & Success Messages */
+.signup-error {
+    color: #d9534f;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.signup-success {
+    color: #5cb85c;
+    text-align: center;
+    margin-bottom: 1rem;
 }
