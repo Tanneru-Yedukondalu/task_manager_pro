@@ -10,6 +10,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    
 }
 
 .modal-content {
@@ -21,6 +22,8 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     animation: slideIn 0.3s ease-out;
     position: relative;
+    background-image: url("/home/mv/Desktop/Task_Manager_Pro/frontend/src/assets/signup.png");
+
 }
 
 .close-button {

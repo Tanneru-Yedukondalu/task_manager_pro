@@ -14,10 +14,10 @@ const EditTaskForm = ({ task, onSave, onCancel }) => {
     };
 
     const handleSave = () => {
-        const { taskName, description, deadline, status } = editedTask;
+        const { taskName, description, deadline, status, priority } = editedTask;
 
         // Validation: Check for empty fields
-        if (!taskName || !description || !deadline || !status) {
+        if (!taskName || !description || !deadline || !status || !priority) {
             setError("All fields are required.");
             return;
         }
@@ -39,10 +39,13 @@ const EditTaskForm = ({ task, onSave, onCancel }) => {
                     readOnly
                 />
                 <label>Description:</label>
-                <textarea
-                    value={editedTask.description || ''}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                />
+                <div
+                    className="scrollable-input"
+                    contentEditable="true"
+                    onInput={(e) => handleInputChange('description', e.currentTarget.textContent)}
+                >
+                    {editedTask.description || ''}
+                </div>
                 <label>Deadline:</label>
                 <input
                     type="date"
@@ -57,6 +60,15 @@ const EditTaskForm = ({ task, onSave, onCancel }) => {
                     <option value="Not Started">Not Started</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
+                </select>
+                <label>Priority:</label>
+                <select
+                    value={editedTask.priority || 'Medium'}
+                    onChange={(e) => handleInputChange('priority', e.target.value)}
+                >
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
                 </select>
             </form>
             <div className="form-actions">

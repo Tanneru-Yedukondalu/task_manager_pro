@@ -58,72 +58,255 @@
     background: #c4ebb2;
 }
 
+
 /* Online users styling */
+/* Section Toggle Buttons */
+.section-toggle-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.section-toggle-buttons button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.section-toggle-buttons button:hover {
+  background-color: #45a049;
+}
+
+.section-toggle-buttons button:active {
+  transform: scale(0.98);
+}
+
+/* Online Users Section */
 .online-users {
-    width: 30%;
-    background: #cccaca;
-    border-right: 1px solid #e0e0e0;
-    /* padding: 1px; */
-    overflow-y: auto;
-    
-    
+  width: 30%;
+  background: #f4f4f4;
+  border-right: 1px solid #e0e0e0;
+  padding: 10px;
+  
+  height: 100%;
 }
 
 .online-users h4 {
-    font-size: 1.1rem;
-    color: #333;
-    font-weight: 600;
-    
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
 }
 
-.onlineusers {
-    height: 50%;
-    padding: 10px;
-    overflow-y: auto; /* Enable scroll if content exceeds max-height */
-    background-color: #e9e9e9; /* Light background for better contrast */
-  }
+.onlineusers{
+  height: 95%;
   
-  .onlineusers ul {
-    list-style-type: none; /* Remove default list styles */
-    padding: 0;
-    margin: 0;
-  }
+}
+
+.onlineusers ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.user-item:hover {
+  background-color: #eef6ff;
+}
+
+.user-item.selected {
+  background-color: #d0e8ff;
+  font-weight: bold;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.status-dot.offline {
+  background-color: #f44336;
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0000006e;
+}
+
+/* Groups Section */
+.groups-section {
+  margin-top: 10px;
+  background-color: #e0f7fa;
+  padding: 5px;
+  border-radius: 5px;
+  height: 45%;
+  overflow: auto;
+  scrollbar-width: none;
+ 
+}
+
+.groups-section h4 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.group-item {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.group-item:hover {
+  background-color: #c8e6c9;
+}
+
+.group-item.selected {
+  background-color: #a5d6a7;
+}
+
+/* Direct Messages Section */
+.direct-messages-section {
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  padding: 5px;
+  border-radius: 5px;
+  height: 45%;
+  overflow: auto;
+  scrollbar-width: none;
   
-  .user-item {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between avatar and username */
-    padding: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
+}
+
+.direct-messages-section h4 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.direct-messages-section ul {
+  list-style-type: none;
+  padding: 0;
   
-  .user-item:hover {
-    background-color: #eef6ff; /* Light blue background on hover */
-  }
-  
-  .user-item.selected {
-    background-color: #d0e8ff; /* Slightly darker blue for selected user */
-    font-weight: bold;
-  }
-  
-  .online-dot {
-    width: 10px;
-    height: 10px;
-    background-color: #4caf50; /* Green dot for online status */
-    border-radius: 50%;
-    margin-right: 5px;
-    display: inline-block;
-  }
-  
-  .user-avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #0078d4; /* Blue border to match theme */
-  }
+}
+
+.direct-messages-section li {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.direct-messages-section li:hover {
+  background-color: #e3f2fd;
+}
+
+.direct-messages-section li.selected {
+  background-color: #bbdefb;
+}
+
+.group-avatar {
+  font-size: 30px !important;
+  color: white; /* Blue color for the icon */
+  margin-right: 10px; 
+  border-radius: 50%;
+  border: 2px solid #00000044;
+  background-color: #aaa9a9;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 10px;
+  background-color: #79797948;
+  padding: 5px;
+}
+
+h4 {
+  font-size: 1.1rem;
+  color: #333;
+
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #0b0e0c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.toggle-button:hover {
+  color: #000000;
+  transform: scale(1.1);
+  background-color: #ffffff;
+  border-radius: 20%;
+}
+
+.toggle-button:active {
+  transform: scale(1);
+}
+
+/* Rotate arrow when section is expanded */
+.toggle-button svg {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.toggle-button svg.rotated {
+  transform: rotate(180deg);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item, .group-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.user-item:hover, .group-item:hover {
+  background-color: #eef6ff;
+}
+
+.selected {
+  font-weight: bold;
+  background-color: #d0e8ff;
+}
+
+
+
   
   .placeholder {
     text-align: center;
@@ -134,22 +317,68 @@
 
 
   /* Create Group Button */
-.create-group-button {
-  margin-top: 10px;
+/* Container for search and button */
+.searchuser {
+  display: flex; /* Align items horizontally */
+  align-items: center; /* Center items vertically */
+  gap: 10px; /* Add space between the input and button */
+  margin: 10px 0; /* Optional spacing around the container */
+  height: 5%;
+}
+/* Input container to hold the icon and input field */
+.searchuser-input-container {
+  position: relative;
+  flex: 1; /* Allow it to take available space */
+}
+
+.searchuser input {
   width: 100%;
-  padding: 8px;
-  background-color: #007bff;
-  color: #fff;
+  padding: 10px 10px 10px 35px; /* Add left padding for the icon */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.searchuser input:focus {
+  border-color: #4CAF50; /* Green border on focus */
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); /* Subtle glow */
+}
+
+/* Search icon inside input */
+.searchuser-input-container .search-icon {
+  position: absolute;
+  top: 55%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #aaa; /* Icon color */
+  pointer-events: none; /* Make it unclickable */
+}
+/* Style for the create group button */
+.create-group-button {
+  background-color: #4CAF50; /* Green button */
+  color: white;
   border: none;
   border-radius: 5px;
-  font-size: 14px;
+  padding: 7px 10px;
+  font-size: 0.1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .create-group-button:hover {
-  background-color: #0056b3;
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slight zoom effect */
 }
+
+.create-group-button:active {
+  transform: scale(0.95); /* Slight shrink effect on click */
+}
+
+
 
 /* Groups Section */
 .groups-section {

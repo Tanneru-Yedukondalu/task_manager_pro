@@ -1,8 +1,4 @@
-
-// Work on Reject call and screen share.
-// Work on group call.
-
-
+//Group video call pending
 
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -14,6 +10,12 @@ import UserIcon from "../../assets/userprofile.jpg";
 import VideoCall from '../VideoCall/VideoCall';
 import { fetchAllUsers, fetchMessages } from '../../api';
 import GroupModal from '../GroupModal/GroupModal';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import SearchIcon from '@mui/icons-material/Search';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import GroupsIcon from '@mui/icons-material/Groups';
+import config from '../../../config';
 
 const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
@@ -22,16 +24,11 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const [chatHistories, setChatHistories] = useState({});
   const [inputMessage, setInputMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);
-
-
-
-
-
   const [groups, setGroups] = useState([]); // Store groups
-  // const [receiver, setReceiver] = useState(null); // Current receiver (user or group)
+  const [searchTerm, setSearchTerm] = useState('');
   const [showGroupModal, setShowGroupModal] = useState(false);
-
-
+  const [showGroups, setShowGroups] = useState(true); // Toggle for showing groups
+  const [showDirectMessages, setShowDirectMessages] = useState(true); // Toggle for showing DMs
   const [receiver, setReceiver] = useState('');
   const [callOffer, setCallOffer] = useState(null); // Store the incoming offer
   const [callState, setCallState] = useState("idle"); // idle, calling, receiving, inCall
@@ -40,25 +37,137 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const peerConnection = useRef(null);
   const iceCandidateQueue = useRef([]); // Queue to store ICE candidates
 
-// Load messages when the receiver (user or group) changes
-useEffect(() => {
-  const loadMessages = async () => {
-    try {
-      if (receiver) {
-        // Fetch messages for the selected receiver (user or group)
-        const messages = await fetchMessages(receiver, null); // Pass the receiver and group (if any)
-        setChatHistories((prevHistories) => ({
-          ...prevHistories,
-          [receiver]: messages, // Update the chat history for the selected receiver
-        }));
+
+
+  //----------------------------All users info---------------------------//
+
+
+
+  useEffect(() => {
+    const loadAllUsers = async () => {
+      try {
+        const users = await fetchAllUsers();
+        const filteredUsers = users.filter((user) => user.username !== username); // Exclude current user
+        setAllUsers(filteredUsers.map((user) => user.username));
+      } catch (error) {
+        console.error("Error loading all users:", error);
       }
-    } catch (error) {
-      console.error("Error loading messages:", error);
+    };
+
+    loadAllUsers();
+  }, [username]); // Make sure username is part of the dependencies
+
+
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Prevent the default behavior (new line in input)
+      e.preventDefault();
+
+      // Call the send message function when Enter is pressed
+      handleSendMessage();
     }
   };
 
-  loadMessages();
-}, [receiver]); // Trigger this effect whenever the receiver changes
+
+  //-----------------------------------------------------------------------------------//
+
+
+
+
+
+// -------------------Direct messages and Group messages and Filtering-----------------//
+
+  const toggleDirectMessages = () => {
+    setShowDirectMessages((prev) => !prev); // Toggle the state
+  };
+  const toggleGroups = () => {
+    setShowGroups((prev) => !prev); // Toggle the state
+  };
+
+  // Filter users based on the search term
+  const filteredUsers = allUsers.filter((user) =>
+    user.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredGroups = groups.filter((group) =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+
+//---------------------------------chat messages----------------//
+
+
+const handleSendMessage = () => {
+  if (!receiver) {
+    alert('Please select a receiver before sending a message!');
+    return;
+  }
+  if (inputMessage.trim()) {
+    const isGroup = groups.some((group) => group.name === receiver);
+    const message = {
+      sender: username,
+      receiver,
+      message: inputMessage,
+      group: isGroup ? receiver : null, // Add group if this is a group message
+    };
+
+    // Emit the message to the backend
+    socket.emit('send_message', message);
+
+    // Save the message locally to the chat history
+    setChatHistories((prevHistories) => {
+      const chatKey = isGroup ? receiver : receiver; // For individual chats, use receiver's name
+      return {
+        ...prevHistories,
+        [chatKey]: [...(prevHistories[chatKey] || []), message],
+      };
+    });
+
+    // Clear the input field
+    setInputMessage('');
+  }
+};
+
+console.log("show chat histories", chatHistories);
+
+
+
+
+
+//----------------Chat history------------------------//
+
+
+
+
+
+  // Load messages when the receiver (user or group) changes
+  useEffect(() => {
+    const loadMessages = async () => {
+      try {
+        if (receiver) {
+          // Fetch messages for the selected receiver (user or group)
+          const messages = await fetchMessages(receiver, null); // Pass the receiver and group (if any)
+          setChatHistories((prevHistories) => ({
+            ...prevHistories,
+            [receiver]: messages, // Update the chat history for the selected receiver
+          }));
+        }
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
+    };
+
+    loadMessages();
+  }, [receiver]); // Trigger this effect whenever the receiver changes
+
+
+
+
+
+
+  //----------------------------Group Creation--------------------//
 
 
   const handleCreateGroup = (group) => {
@@ -100,7 +209,7 @@ useEffect(() => {
 
 
 
-
+//-----------------------Video calling using WEBRTC-------------------//
 
 
 
@@ -109,14 +218,12 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    const socketIo = io('https://10.50.48.11:5000', {
+    const socketIo = io(config.SOCKET_URL, {
       transports: ['websocket', 'polling'], // Use both WebSocket and polling as fallback
       secure: true, // Explicitly use secure connections
       reconnectionAttempts: 5, // Retry connection if it fails
     });
 
-
-    // const socketIo = io('http://localhost:5000'); // Connect to Flask-SocketIO server
     setSocket(socketIo);
 
     if (socketIo) {
@@ -132,14 +239,14 @@ useEffect(() => {
         setChatHistories((prevHistories) => {
           // Determine the chat key: group name for group messages, sender for individual messages
           const chatKey = data.group || data.sender;
-      
+
           return {
             ...prevHistories,
             [chatKey]: [...(prevHistories[chatKey] || []), data],
           };
         });
       });
-      
+
 
       //Receive incoming call offer
 
@@ -244,46 +351,9 @@ useEffect(() => {
   }, [socket]);
 
 
-  const handleSendMessage = () => {
-    if (!receiver) {
-      alert('Please select a receiver before sending a message!');
-      return;
-    }
-    if (inputMessage.trim()) {
-      const isGroup = groups.some((group) => group.name === receiver);
-      const message = {
-        sender: username,
-        receiver,
-        message: inputMessage,
-        group: isGroup ? receiver : null, // Add group if this is a group message
-      };
-  
-      // Emit the message to the backend
-      socket.emit('send_message', message);
-  
-      // Save the message locally to the chat history
-      setChatHistories((prevHistories) => {
-        const chatKey = isGroup ? receiver : receiver; // For individual chats, use receiver's name
-        return {
-          ...prevHistories,
-          [chatKey]: [...(prevHistories[chatKey] || []), message],
-        };
-      });
-  
-      // Clear the input field
-      setInputMessage('');
-    }
-  };
-  
-  console.log("show chat histories", chatHistories);
 
 
-
-
-
-
-
-
+//-------------------video call streaming---------------//
 
 
 
@@ -380,37 +450,14 @@ useEffect(() => {
 
 
 
+//------------------------------------------------------------------------------//
 
 
 
 
 
 
-  useEffect(() => {
-    const loadAllUsers = async () => {
-      try {
-        const users = await fetchAllUsers();
-        const filteredUsers = users.filter((user) => user.username !== username); // Exclude current user
-        setAllUsers(filteredUsers.map((user) => user.username));
-      } catch (error) {
-        console.error("Error loading all users:", error);
-      }
-    };
 
-    loadAllUsers();
-  }, [username]); // Make sure username is part of the dependencies
-
-
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      // Prevent the default behavior (new line in input)
-      e.preventDefault();
-  
-      // Call the send message function when Enter is pressed
-      handleSendMessage();
-    }
-  };
 
 
 
@@ -423,59 +470,90 @@ useEffect(() => {
             <div className="onlineuser">
               <h4>Online Users</h4>
             </div>
-            <div className="onlineusers">
+            <div className="onlineusers" >
+              <div className="searchuser" >
 
-              
-              <ul>
-                {allUsers.map((user, index) => {
-                  const isOnline = onlineUsers.includes(user);
-                  return (
-                    <li
-                      key={index}
-                      className={`user-item ${receiver === user ? 'selected' : ''}`}
-                      onClick={() => setReceiver(user)}
-                    >
-                      {/* <span className="online-dot"></span> */}
-                      {/* Status Indicator */}
-                      <span
-                        className={`status-dot ${isOnline ? 'online' : 'offline'}`} // Add appropriate classes for styling
-                      ></span>
+                <div className="searchuser-input-container">
+                  <span className="search-icon"> <SearchIcon /> </span> {/* Replace with a proper icon library if needed */}
+                  <input
+                    placeholder="Search user"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
 
-
-                      <img
-                        src={UserIcon}
-                        alt={`${user}'s avatar`}
-                        className="user-avatar"
-                      />
-                      {user}
-                    </li>
-                  )
-                })}
-              </ul>
-
-
-              <button className="create-group-button" onClick={() => setShowGroupModal(true)}>
-                Create Group
-              </button>
-            </div>
-
-            {/* Groups Section */}
-            {groups.length > 0 && (
-              <div className="groups-section">
-                <h4>Groups</h4>
-                <ul>
-                  {groups.map((group, index) => (
-                    <li
-                      key={index}
-                      className={`group-item ${receiver === group.name ? 'selected' : ''}`}
-                      onClick={() => setReceiver(group.name)} // Set group name as receiver
-                    >
-                      {group.name}
-                    </li>
-                  ))}
-                </ul>
+                <button className="create-group-button" onClick={() => setShowGroupModal(true)}>
+                  <GroupAddIcon />
+                </button>
               </div>
-            )}
+              <div className="direct-messages-section" style={{
+                height: showDirectMessages ? "calc(100% - 55%)" : "8%",
+                transition: "height 0.3s ease",
+              }}>
+                <div className="section-header">
+                  <h4>Direct Messages</h4>
+                  <button className="toggle-button" onClick={toggleDirectMessages}>
+                    {showDirectMessages ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  </button>
+                </div>
+
+                {showDirectMessages && (
+
+
+
+                  <ul>
+                    {filteredUsers.map((user, index) => {
+                      const isOnline = onlineUsers.includes(user);
+                      return (
+                        <li
+                          key={index}
+                          className={`user-item ${receiver === user ? 'selected' : ''}`}
+                          onClick={() => setReceiver(user)}
+                        >
+                          <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+                          <img src={UserIcon} alt={`${user}'s avatar`} className="user-avatar" />
+                          {user}
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                )}
+              </div>
+
+              <div className="groups-section" style={{
+                height: showGroups ? "calc(100% - 55%)" : "8%",
+                transition: "height 0.3s ease",
+              }}>
+                <div className="section-header">
+                  <h4>Groups</h4>
+                  <button className="toggle-button" onClick={toggleGroups}>
+                    {showGroups ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  </button>
+                </div>
+
+                {showGroups && (
+                  <ul>
+                    {filteredGroups.map((group, index) => (
+                      <li
+                        key={index}
+                        className={`group-item ${receiver === group.name ? 'selected' : ''}`}
+                        onClick={() => setReceiver(group.name)}
+                      >
+
+                        <GroupsIcon className="group-avatar" />
+
+                        {group.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+
+
+
+            </div>
 
 
           </div>
@@ -523,32 +601,32 @@ useEffect(() => {
 
             <div className="chatbox-body">
               {receiver ? (
-               <div className="messages">
-               {(chatHistories[receiver] || [])
-                 .filter((message) => {
-                   const isGroupChat = groups.some((group) => group.name === receiver);
-                   if (isGroupChat) {
-                     return message.group === receiver; // Show group messages for this group
-                   }
-                   return !message.group && (message.sender === username || message.sender === receiver); // Show messages for individual chats
-                 })
-                 .map((message, index) => (
-                   <div
-                     key={index}
-                     className={`message ${message.sender === username ? 'self' : 'other'}`}
-                   >
-                     {message.sender !== username && (
-                       <span className="message-sender">
-                         {message.sender}{' '}
-                         {/* {message.group ? `(in ${message.group})` : ''} */}
-                       </span>
-                     )}
-                     <p className="message-content">{message.message}</p>
-                   </div>
-                 ))}
-             </div>
-             
-              
+                <div className="messages">
+                  {(chatHistories[receiver] || [])
+                    .filter((message) => {
+                      const isGroupChat = groups.some((group) => group.name === receiver);
+                      if (isGroupChat) {
+                        return message.group === receiver; // Show group messages for this group
+                      }
+                      return !message.group && (message.sender === username || message.sender === receiver); // Show messages for individual chats
+                    })
+                    .map((message, index) => (
+                      <div
+                        key={index}
+                        className={`message ${message.sender === username ? 'self' : 'other'}`}
+                      >
+                        {message.sender !== username && (
+                          <span className="message-sender">
+                            {message.sender}{' '}
+                            {/* {message.group ? `(in ${message.group})` : ''} */}
+                          </span>
+                        )}
+                        <p className="message-content">{message.message}</p>
+                      </div>
+                    ))}
+                </div>
+
+
               ) : (
                 <div className="placeholder">
                   <p>Select a user or group to start chatting.</p>

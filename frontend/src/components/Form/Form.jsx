@@ -81,6 +81,7 @@ const Form = ({ selectedUser, selectedUserId }) => {
             value={formData.description}
             onChange={handleChange}
             rows="4"
+            className="scrollable-textarea"
             required
           />
         </div>
