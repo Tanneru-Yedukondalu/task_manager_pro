@@ -9,7 +9,10 @@ const VideoCall = ({
   onMuteToggle,
   onCameraToggle,
   onAnswerCall,
-  onRejectCall
+  onRejectCall,
+  onScreenShareToggle,
+  isScreenSharing
+
 }) => {
   return (
     <div className="video-call-overlay">
@@ -43,6 +46,9 @@ const VideoCall = ({
           <div className="video-controls">
             <button onClick={onMuteToggle} className="control-button mute-button">Mute/Unmute</button>
             <button onClick={onCameraToggle} className="control-button camera-button">Toggle Camera</button>
+            <button onClick={onScreenShareToggle} className="control-button screenshare-button">
+              {isScreenSharing ? "Stop Sharing" : "Share Screen"}
+            </button>
             <button onClick={onEndCall} className="control-button end-call-button">End Call</button>
           </div>
         )}

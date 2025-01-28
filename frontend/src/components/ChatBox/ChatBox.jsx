@@ -36,6 +36,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const peerConnection = useRef(null);
   const iceCandidateQueue = useRef([]); // Queue to store ICE candidates
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
 
 
 
@@ -76,7 +77,7 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
 
 
-// -------------------Direct messages and Group messages and Filtering-----------------//
+  // -------------------Direct messages and Group messages and Filtering-----------------//
 
   const toggleDirectMessages = () => {
     setShowDirectMessages((prev) => !prev); // Toggle the state
@@ -96,47 +97,47 @@ const ChatBox = ({ isOpen, toggleChat, username, setDisconnectSocket }) => {
 
 
 
-//---------------------------------chat messages----------------//
+  //---------------------------------chat messages----------------//
 
 
-const handleSendMessage = () => {
-  if (!receiver) {
-    alert('Please select a receiver before sending a message!');
-    return;
-  }
-  if (inputMessage.trim()) {
-    const isGroup = groups.some((group) => group.name === receiver);
-    const message = {
-      sender: username,
-      receiver,
-      message: inputMessage,
-      group: isGroup ? receiver : null, // Add group if this is a group message
-    };
-
-    // Emit the message to the backend
-    socket.emit('send_message', message);
-
-    // Save the message locally to the chat history
-    setChatHistories((prevHistories) => {
-      const chatKey = isGroup ? receiver : receiver; // For individual chats, use receiver's name
-      return {
-        ...prevHistories,
-        [chatKey]: [...(prevHistories[chatKey] || []), message],
+  const handleSendMessage = () => {
+    if (!receiver) {
+      alert('Please select a receiver before sending a message!');
+      return;
+    }
+    if (inputMessage.trim()) {
+      const isGroup = groups.some((group) => group.name === receiver);
+      const message = {
+        sender: username,
+        receiver,
+        message: inputMessage,
+        group: isGroup ? receiver : null, // Add group if this is a group message
       };
-    });
 
-    // Clear the input field
-    setInputMessage('');
-  }
-};
+      // Emit the message to the backend
+      socket.emit('send_message', message);
 
-console.log("show chat histories", chatHistories);
+      // Save the message locally to the chat history
+      setChatHistories((prevHistories) => {
+        const chatKey = isGroup ? receiver : receiver; // For individual chats, use receiver's name
+        return {
+          ...prevHistories,
+          [chatKey]: [...(prevHistories[chatKey] || []), message],
+        };
+      });
+
+      // Clear the input field
+      setInputMessage('');
+    }
+  };
+
+  console.log("show chat histories", chatHistories);
 
 
 
 
 
-//----------------Chat history------------------------//
+  //----------------Chat history------------------------//
 
 
 
@@ -209,7 +210,7 @@ console.log("show chat histories", chatHistories);
 
 
 
-//-----------------------Video calling using WEBRTC-------------------//
+  //-----------------------Video calling using WEBRTC-------------------//
 
 
 
@@ -353,7 +354,7 @@ console.log("show chat histories", chatHistories);
 
 
 
-//-------------------video call streaming---------------//
+  //-------------------video call streaming---------------//
 
 
 
@@ -450,13 +451,70 @@ console.log("show chat histories", chatHistories);
 
 
 
-//------------------------------------------------------------------------------//
+  //------------------------------------------------------------------------------//
 
 
 
+  //-----------------------------------------screen sharing---------------------//
+
+  const handleScreenShareToggle = async () => {
+    if (!isScreenSharing) {
+      try {
+        // Capture screen
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+
+        // Replace the current video track with the screen track
+        const screenTrack = screenStream.getTracks()[0];
+
+        // Replace track in PeerConnection
+        const sender = peerConnection.current
+          .getSenders()
+          .find((s) => s.track.kind === "video");
+
+        if (sender) {
+          sender.replaceTrack(screenTrack);
+        }
+
+        // Update state
+        setLocalStream(screenStream);
+        setIsScreenSharing(true);
+
+        // Handle stop sharing event
+        screenTrack.onended = () => {
+          handleStopScreenShare();
+        };
+      } catch (err) {
+        console.error("Error sharing screen:", err);
+      }
+    } else {
+      handleStopScreenShare();
+    }
+  };
+
+  const handleStopScreenShare = async () => {
+    // Get the original camera stream
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const videoTrack = stream.getTracks().find((track) => track.kind === "video");
+
+    // Replace the screen track with the camera track
+    const sender = peerConnection.current
+      .getSenders()
+      .find((s) => s.track.kind === "video");
+
+    if (sender) {
+      sender.replaceTrack(videoTrack);
+    }
+
+    // Update state
+    setLocalStream(stream);
+    setIsScreenSharing(false);
+  };
 
 
 
+  //--------------------------------------------------------------------------------------------------------
 
 
 
@@ -616,12 +674,12 @@ console.log("show chat histories", chatHistories);
                         className={`message ${message.sender === username ? 'self' : 'other'}`}
                       >
                         {message.sender !== username && (
-                          <span className="message-sender">
+                          <span className="message-sender" style={{border:"1px solid red"}}>
                             {message.sender}{' '}
                             {/* {message.group ? `(in ${message.group})` : ''} */}
                           </span>
                         )}
-                        <p className="message-content">{message.message}</p>
+                        <p className="message-content" style={{border:"1px solid red"}}>{message.message}</p>
                       </div>
                     ))}
                 </div>
@@ -666,6 +724,10 @@ console.log("show chat histories", chatHistories);
             onAnswerCall={handleAnswerCall}
             onRejectCall={handleEndCall}  // for now just ending the call on rejecting the call.
             receiver={receiver}
+            onScreenShareToggle={handleScreenShareToggle} // Add this
+            isScreenSharing={isScreenSharing} // Add this
+            localUserName={username} // Pass the current user's username
+            remoteUserName={receiver}
 
           />
         ) : null}
